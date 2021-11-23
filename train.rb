@@ -1,7 +1,7 @@
 class Train
 
-  attr_accessor :speed, :amount, :station_start
-  attr_reader :station_now, :type, :number, :route
+  attr_accessor :speed
+  attr_reader :station_now, :type, :number, :route, :amount, :station_start
 
   def initialize(number, type, amount)
     @number = number
@@ -20,7 +20,7 @@ class Train
 
   def amount_wagons(num)
     if @speed == 0
-      @amount = @amount.to_i + num.to_i
+      @amount = @amount + num
     else
       puts "Error! You cannot add / subtract train wagons while the train is driving!"
     end
@@ -53,26 +53,19 @@ class Train
     end
   end
 
-  def station_info(route)
-    #binding.irb
-    route_station = route.station_list
-    station_info = []
-    station_now = route_station.first
-    index_previous = route_station.index(station_now) - 1
-    if index_previous > 0
-      station_previous = route_station[index_previous].name
-    else
-      station_previous = "no"
-    end
+  def station_now(route)
+    route.station_list.first
+  end
 
-    index_next = route_station.index(station_now) + 1
-    if index_next <= route_station.size - 1
-      station_next = route_station[index_next].name
-    else
-      station_next = "no"
-    end
+  def station_previous(route)
+    station_now = route.station_list.first
+    index = route.station_list.index(station_now) - 1
+    route[index].name if index > 0
+  end
 
-    station_info << station_previous << station_now.name << station_next
-    p station_info
+  def station_next(route)
+    station_now = route.station_list.first
+    index = route.station_list.index(station_now) + 1
+    route.station_list[index].name if index <= route.station_list.size - 1
   end
 end
