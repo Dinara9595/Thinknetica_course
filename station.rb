@@ -1,6 +1,4 @@
 class Station
-
-  #attr_accessor :train_now
   attr_reader :name, :train_now
 
   def initialize(name)
@@ -11,7 +9,6 @@ class Station
   def add_train(train)
     @train_now << train
   end
-
 
   def trains_by(type)
     @train_now.select { |train| train.type == type }
