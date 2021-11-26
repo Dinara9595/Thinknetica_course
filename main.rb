@@ -9,7 +9,7 @@ require_relative 'cargo_wagons.rb'
 
 
 #rr = RailRoad.new
-class RR
+class RailRoad
   TRAIN_COMMANDS_LIST = [
        "Введите 0, если хотите прервать операцию",
        "Введите 1, если хотите создать пассажирский тип поезда",
@@ -55,7 +55,62 @@ class RR
     @wagons = []
   end
 
-  #private
+  def menu
+    start_menu
+    input0 = input
+    case input0
+    when 1
+      one_level
+      input1 = gets.to_i
+      case input1
+      when 1
+        create_station
+      when 2
+        create_train
+      when 3
+        create_route
+      else
+        error
+      end
+    when 2
+      two_level
+      input2 = gets.to_i
+      case input2
+      when 1
+        add_station_to_route
+      when 2
+        delete_station_from_route
+      when 3
+        add_route_to_train
+      when 4
+        add_wagons_to_train
+      when 5
+        delete_wagons_to_train
+      when 6
+        train_go_to_by_route
+      else
+        error
+      end
+    when 3
+      three_level
+      input3 = gets.to_i
+      case input3
+      when 1
+        see_trains
+      when 2
+        error_availability(@stations, "станцию")
+        puts @stations
+      else
+        error
+      end
+    when 0
+      end_level
+    else
+      error
+    end
+  end
+
+  private
 
   def invalid_input
     raise
@@ -283,61 +338,6 @@ class RR
       puts "На данной станции нет поездов"
     else
       @stations[input_s].train_now
-    end
-  end
-
-  def menu
-    start_menu
-    input0 = input
-    case input0
-    when 1
-      one_level
-      input1 = gets.to_i
-      case input1
-      when 1
-        create_station
-      when 2
-        create_train
-      when 3
-        create_route
-      else
-        error
-      end
-    when 2
-      two_level
-      input2 = gets.to_i
-      case input2
-      when 1
-        add_station_to_route
-      when 2
-        delete_station_from_route
-      when 3
-        add_route_to_train
-      when 4
-        add_wagons_to_train
-      when 5
-        delete_wagons_to_train
-      when 6
-        train_go_to_by_route
-      else
-        error
-      end
-    when 3
-      three_level
-      input3 = gets.to_i
-      case input3
-      when 1
-        see_trains
-      when 2
-        error_availability(@stations, "станцию")
-        puts @stations
-      else
-        error
-      end
-    when 0
-      end_level
-    else
-      error
     end
   end
 end
