@@ -1,10 +1,24 @@
+require_relative 'instance_counter.rb'
+
 class Station
+  extend InstanceCounter::ClassMethods
+  include InstanceCounter::InstanceMethods
   attr_reader :name, :train_now
+
+  class << self
+    def all
+      @all ||= []
+    end
+  end
+
 
   def initialize(name)
     @name = name
     @train_now = []
+    self.class.all << self
+    register_instance
   end
+
 
   def add_train(train)
     @train_now << train

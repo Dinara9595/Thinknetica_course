@@ -1,13 +1,30 @@
-class Train
+require_relative 'manufacturing_company.rb'
+require_relative 'instance_counter.rb'
 
+class Train
+  include ManufacturingCompany
+  extend InstanceCounter::ClassMethods
+  include InstanceCounter::InstanceMethods
   #хочу чтобы пользователь мог только видеть скорость, но не устанавливать
   attr_reader :speed, :type, :number, :route, :station_start, :current_st, :wagons
+
+  class << self
+    def all
+      @all ||= []
+    end
+    def find(number)
+      train_by_number = @all.select { |train| train.number == number }
+      puts train_by_number if train_by_number
+    end
+  end
 
   def initialize(number, type)
     @number = number
     @type = type
     @speed = 0
     @wagons = []
+    self.class.all << self
+    register_instance
   end
 
   def forward

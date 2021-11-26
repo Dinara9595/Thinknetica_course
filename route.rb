@@ -1,9 +1,20 @@
-class Route
+require_relative 'instance_counter.rb'
 
+class Route
+  extend InstanceCounter::ClassMethods
+  include InstanceCounter::InstanceMethods
   attr_reader :station_list
+
+  class << self
+    def all
+      @all ||= []
+    end
+  end
 
   def initialize(first_station, last_station)
     @station_list = [first_station, last_station]
+    self.class.all << self
+    register_instance
   end
 
   def add_station(station)
