@@ -5,20 +5,18 @@ module InstanceCounter
   end
 
   module ClassMethods
+    attr_writer :instances
     def instances
-      if @all
-        @all.size
-      else
-        0
-      end
+      @instances ||= 0
     end
   end
 
-  private
-
   module InstanceMethods
+
+    private
+
     def register_instance
-      self.class.instances
+      self.class.instances += 1
     end
   end
 end
