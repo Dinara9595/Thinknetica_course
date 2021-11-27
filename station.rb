@@ -1,8 +1,8 @@
 require_relative 'instance_counter.rb'
 
 class Station
-  extend InstanceCounter::ClassMethods
-  include InstanceCounter::InstanceMethods
+  include InstanceCounter
+
   attr_reader :name, :train_now
 
   class << self

@@ -3,9 +3,8 @@ require_relative 'instance_counter.rb'
 
 class Train
   include ManufacturingCompany
-  extend InstanceCounter::ClassMethods
-  include InstanceCounter::InstanceMethods
-  #хочу чтобы пользователь мог только видеть скорость, но не устанавливать
+  include InstanceCounter
+
   attr_reader :speed, :type, :number, :route, :station_start, :current_st, :wagons
 
   class << self
@@ -69,17 +68,15 @@ class Train
 
   private
 
-  attr_writer :speed  #хочу чтобы пользователь не мог устаналивать скорость
+  attr_writer :speed
 
   def go(speed)
-    self.speed = speed   # не хочу чтобы пользователь мог утсанавливать поезду скорость и всячески управлять
+    self.speed = speed
   end
 
   INITIAL_SPEED = 0
 
   def stop
-    @speed = INITIAL_SPEED # не хочу чтобы пользователь мог останавливать поезда
+    @speed = INITIAL_SPEED
   end
-
-  #объявлять методы protected я не вижу необходимости в текущем классе
 end
