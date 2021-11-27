@@ -9,6 +9,8 @@ module InstanceCounter
     end
   end
 
+  private
+
   module InstanceMethods
     def register_instance
       self.class.instances
