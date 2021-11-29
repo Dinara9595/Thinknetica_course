@@ -10,27 +10,23 @@ require_relative 'cargo_wagons.rb'
 
 #rr = RailRoad.new
 class RailRoad
-  TRAIN_COMMANDS_LIST = [
-       "Введите 0, если хотите прервать операцию",
-       "Введите 1, если хотите создать пассажирский тип поезда",
-       "Введите 2, если хотите создать грузовой тип поезда"
-  ]
+
   TRAIN_GO = [
-       "Введите 1, если вы хотите, чтобы поезд переместился вперед на одну станцию",
-       "Введите 2, если вы хотите, чтобы поезд переместился назад на одну станцию"
+      "Введите 1, если вы хотите, чтобы поезд переместился вперед на одну станцию",
+      "Введите 2, если вы хотите, чтобы поезд переместился назад на одну станцию"
   ]
 
   START_MENU = [
-       "Введите 1, если вы хотите создать станцию, поезд или маршрут",
-       "Введите 2, если вы хотите произвести операции с созданными объектами",
-       "Введите 3, если вы хотите вывести текущие данные об объектах",
-       "Введите 0, если вы хотите закончить программу"
+      "Введите 1, если вы хотите создать станцию, поезд или маршрут",
+      "Введите 2, если вы хотите произвести операции с созданными объектами",
+      "Введите 3, если вы хотите вывести текущие данные об объектах",
+      "Введите 0, если вы хотите закончить программу"
   ]
 
   ONE_LEVEL = [
-       "Введите 1, если вы хотите создать станцию",
-       "Введите 2, если вы хотите создать поезд",
-       "Введите 3, если вы хотите создать маршрут"
+      "Введите 1, если вы хотите создать станцию",
+      "Введите 2, если вы хотите создать поезд",
+      "Введите 3, если вы хотите создать маршрут"
   ]
 
   TWO_LEVEL = [
@@ -99,7 +95,7 @@ class RailRoad
         see_trains
       when 2
         error_availability(@stations, "станцию")
-        puts @stations
+        @stations.each {|station| puts station}
       else
         error
       end
@@ -149,33 +145,31 @@ class RailRoad
   end
 
   def create_station
+    begin
     puts "Введите название станции"
     name = gets.chomp
     station = Station.new(name)
+    rescue Exception => e
+      puts "Error: #{e.message}"
+    retry
+    end
     @stations << station
-    station
+    puts "Создана станция #{station}"
   end
 
   def create_train
-    puts "Введите номер поезда"
-    number = gets.chomp
-    puts TRAIN_COMMANDS_LIST
-    train = nil
-    until train
-      type = input
-      case type
-      when 0
-        break
-      when 1
-        train = PassengerTrain.new(number)
-      when 2
-        train = CargoTrain.new(number)
-      else
-        error
-      end
+    begin
+      puts "Введите номер поезда"
+      number = gets.chomp
+      puts "Введите тип поезда"
+      type = gets.chomp
+      train = Train.new(number, type)
+    rescue Exception => e
+      puts "Error: #{e.message}"
+      retry
     end
-    @trains << train if train
-    train
+    @trains << train
+    puts "Создан поезд #{train}"
   end
 
   def create_route
