@@ -1,13 +1,29 @@
-class Train
+require_relative 'manufacturing_company.rb'
+require_relative 'instance_counter.rb'
 
-  #хочу чтобы пользователь мог только видеть скорость, но не устанавливать
+class Train
+  include ManufacturingCompany
+  include InstanceCounter
+
   attr_reader :speed, :type, :number, :route, :station_start, :current_st, :wagons
+
+  class << self
+    def all
+      @all ||= []
+    end
+    def find(number)
+      train_by_number = @all.select { |train| train.number == number }
+      puts train_by_number if train_by_number
+    end
+  end
 
   def initialize(number, type)
     @number = number
     @type = type
     @speed = 0
     @wagons = []
+    self.class.all << self
+    register_instance
   end
 
   def forward
@@ -52,17 +68,15 @@ class Train
 
   private
 
-  attr_writer :speed  #хочу чтобы пользователь не мог устаналивать скорость
+  attr_writer :speed
 
   def go(speed)
-    self.speed = speed   # не хочу чтобы пользователь мог утсанавливать поезду скорость и всячески управлять
+    self.speed = speed
   end
 
   INITIAL_SPEED = 0
 
   def stop
-    @speed = INITIAL_SPEED # не хочу чтобы пользователь мог останавливать поезда
+    @speed = INITIAL_SPEED
   end
-
-  #объявлять методы protected я не вижу необходимости в текущем классе
 end
