@@ -7,6 +7,9 @@ class Train
 
   attr_reader :speed, :type, :number, :route, :station_start, :current_st, :wagons
 
+  NUMBER_FORMAT = /^[а-яa-z\d]{3}[-]*[а-яa-z\d]{2}$/i
+  ARRAY_TYPE = %w[пассажирский грузовой]
+
   class << self
     def all
       @all ||= []
@@ -18,12 +21,27 @@ class Train
   end
 
   def initialize(number, type)
-    @number = number
+    @number = number.to_s if number
     @type = type
     @speed = 0
     @wagons = []
     self.class.all << self
     register_instance
+    validate!
+  end
+
+  def validate!
+    raise "Номер не может быть nil" if number.nil?
+    raise "Номер должен быть не менее пяти символов" if number.length < 5
+    raise "Невалидный формат номера" if number !~ NUMBER_FORMAT
+    raise "Неверный ввод! Тип поезда может быть либо грузовой, либо пассажирский" unless ARRAY_TYPE.include?(type)
+  end
+
+  def valid?
+    validate!
+    true
+  rescue
+    false
   end
 
   def forward
