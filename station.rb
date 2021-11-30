@@ -35,6 +35,11 @@ class Station
     false
   end
 
+  def train_on_station(&block)
+    @train_now.each {|train| block.call(train)}
+  end
+  #s.train_on_station {|train| puts train}
+
   def add_train(train)
     @train_now << train
   end

@@ -45,7 +45,6 @@ class Train
   end
 
   def forward
-    binding.irb
     if next_st
       @current_st = next_st
     else
@@ -72,6 +71,7 @@ class Train
   end
 
   def add_wagon(wagon)
+    return puts "Такой вагон уже есть у этого поезда" if @wagons.include?(wagon)
     @wagons << wagon if self.type == wagon.type
   end
 
@@ -83,6 +83,11 @@ class Train
     @route = route
     @current_st = @route.station_list.first
   end
+
+  def wagon_train(&block)
+    @wagons.each {|wagon| block.call(wagon)}
+  end
+  #t.wagon_train {|wagon| puts wagon}
 
   private
 
@@ -98,3 +103,4 @@ class Train
     @speed = INITIAL_SPEED
   end
 end
+

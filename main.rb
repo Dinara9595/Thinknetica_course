@@ -35,12 +35,14 @@ class RailRoad
       "Введите 3, если вы хотите назначить маршрут поезду",
       "Введите 4, если вы хотите добавить вагоны поезду",
       "Введите 5, если вы хотите отцепить вагоны от поезда",
-      "Введите 6, если вы хотите перемещать поезд по маршруту"
+      "Введите 6, если вы хотите перемещать поезд по маршруту",
+      "Введите 7, если хотите занять место или объем в вагоне"
   ]
 
   THREE_LEVEL = [
       "Введите 1, если вы хотите посмотреть список поездов на станции",
-      "Введите 2, если вы хотите посмотреть список созданных станций"
+      "Введите 2, если вы хотите посмотреть список созданных станций",
+      "Введите 3, если вы хотите посмотреть список вагонов у поезда"
   ]
   attr_reader :stations, :routes, :trains, :wagons
 
@@ -84,6 +86,8 @@ class RailRoad
         delete_wagons_to_train
       when 6
         train_go_to_by_route
+      when 7
+        occupied_volume_or_seats
       else
         error
       end
@@ -92,10 +96,12 @@ class RailRoad
       input3 = gets.to_i
       case input3
       when 1
-        see_trains
+        see_trains_on_station
       when 2
         error_availability(@stations, "станцию")
         @stations.each {|station| puts station}
+      when 3
+        see_wagons_of_train
       else
         error
       end
@@ -207,13 +213,11 @@ class RailRoad
   def selection_and_check(arr_el_rr, element_rr)
     selection(arr_el_rr, element_rr)
     choice = nil
-
     until choice
       choice = input
       choice = nil unless arr_el_rr[choice]
       error unless choice
     end
-
     choice
   end
 
@@ -278,11 +282,21 @@ class RailRoad
   def add_wagons_to_train
     return unless error_availability(@trains, "поезд")
     input_t = selection_and_check(@trains, "поезд")
-    if @trains[input_t].type == "Пассажирский"
-      @trains[input_t].add_wagon(PassengerWagons.new)
-    else
-      @trains[input_t].type == "Грузовой"
-      @trains[input_t].add_wagon(CargoWagons.new)
+    begin
+    if @trains[input_t].type == "пассажирский"
+      puts "Введите количество мест в вагоне"
+      input_seats = gets.chomp
+      check_seats = Integer(input_seats)
+      @trains[input_t].add_wagon(PassengerWagons.new(check_seats))
+    else @trains[input_t].type == "грузовой"
+      puts "Введите объем вагона"
+      input_volume = gets.chomp
+      check_volume = Integer(input_volume)
+      @trains[input_t].add_wagon(CargoWagons.new(check_volume))
+    end
+    rescue Exception => e
+      puts "Error: #{e.message}"
+      retry
     end
     puts "К поезду добавлен один вагон по типу"
   end
@@ -324,14 +338,67 @@ class RailRoad
     end
   end
 
-  def see_trains
+  def see_trains_on_station
     return unless error_availability(@stations, "станцию") && error_availability(@trains, "поезд")
     input_s = selection_and_check(@stations, "станцию")
     train_of_station = @stations[input_s].train_now
     if train_of_station.empty?
       puts "На данной станции нет поездов"
     else
-      @stations[input_s].train_now
+      @stations[input_s].train_on_station do |train|
+        puts ["Номер поезда: #{train.number}",
+              "Тип поезда: #{train.type}",
+              "Количество вагонов: #{train.wagons.size}"]
+      end
+    end
+  end
+
+  def see_wagons_of_train
+    return unless error_availability(@trains, "поезд")
+    input_t = selection_and_check(@trains, "поезд")
+    return unless error_availability(@trains[input_t].wagons, "вагон/добавьте его выбранному поезду")
+    @trains[input_t].wagons
+    train_type = @trains[input_t].type
+    if train_type == "пассажирский"
+      i=0
+      @trains[input_t].wagon_train do |wagon|
+      puts ["номер вагона: #{i}",
+            "тип вагона: #{wagon.type}",
+            "количество свободных мест: #{wagon.available_seats}",
+            "количество занятых мест: #{wagon.occupied_seats}"]
+      i+=1
+      end
+    else train_type == "грузовой"
+    i=0
+    @trains[input_t].wagon_train do |wagon|
+      puts ["номер вагона: #{i}",
+            "тип вагона: #{wagon.type}",
+            "количество свободного объема: #{wagon.available_volume}",
+            "количество занятого объема: #{wagon.occupied_volume}"]
+      i+=1
+    end
+    end
+  end
+
+  def occupied_volume_or_seats
+    return unless error_availability(@trains, "поезд")
+    input_t = selection_and_check(@trains, "поезд")
+    wagons = @trains[input_t].wagons
+    return unless error_availability(wagons, "вагон/добавьте его выбранному поезду")
+    input_w = selection_and_check(wagons, "вагон")
+    type_train = @trains[input_t].type
+    if type_train == "пассажирский"
+      wagons[input_w].take_a_seat(1)
+    else type_train == "грузовой"
+    puts "Введите количество объема, который хотите занять"
+    begin
+      input_v = gets.chomp
+      check_volume = Integer(input_v)
+      wagons[input_w].take_a_volume(check_volume)
+    rescue Exception => e
+      puts "Error: #{e.message}"
+      retry
+    end
     end
   end
 end
