@@ -387,18 +387,30 @@ class RailRoad
     return unless error_availability(wagons, "вагон/добавьте его выбранному поезду")
     input_w = selection_and_check(wagons, "вагон")
     type_train = @trains[input_t].type
-    if type_train == "пассажирский"
-      wagons[input_w].take_a_seat(1)
-    else type_train == "грузовой"
-    puts "Введите количество объема, который хотите занять"
-    begin
-      input_v = gets.chomp
-      check_volume = Integer(input_v)
-      wagons[input_w].take_a_volume(check_volume)
-    rescue Exception => e
-      puts "Error: #{e.message}"
-      retry
-    end
+    seat = 1
+    case type_train
+    when "пассажирский"
+      if seat <= wagons[input_w].available_seats
+        wagons[input_w].take_a_seat(seat)
+        puts "Вы заняли место: #{seat}"
+      else
+        puts "Вы не можете занять больше доступных мест, доступное количество мест: #{wagons[input_w].available_seats}"
+      end
+    when "грузовой"
+      puts "Введите количество объема, который хотите занять"
+      begin
+        input_v = gets.chomp
+        check_volume = Integer(input_v)
+        if check_volume <= wagons[input_w].available_volume
+          wagons[input_w].take_a_volume(check_volume)
+          puts "Вы заняли объем: #{check_volume}"
+        else
+          puts "Вы не можете занять больше доступного объема, доступный объем: #{wagons[input_w].available_volume}"
+        end
+      rescue Exception => e
+        puts "Error: #{e.message}"
+        retry
+      end
     end
   end
 end

@@ -13,9 +13,7 @@ class CargoWagons < Wagons
     if volume <= @available_volume
       @available_volume -= volume
       @occupied_volume << volume
-      puts "Вы заняли объем: #{volume}"
-    else
-      puts "Вы не можете занять больше доступного объема, доступный объем #{@available_volume}"
+      volume
     end
   end
 

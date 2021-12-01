@@ -6,15 +6,14 @@ class PassengerWagons < Wagons
     @available_seats = total_seats
     occupied_seats
     super("пассажирский")
+    validate!
   end
 
   def take_a_seat(seat = 1)
     if seat <= @available_seats
       @available_seats -= seat
       @occupied_seats << seat
-      puts "Вы заняли место: #{seat}"
-    else
-      puts "Вы не можете занять больше доступных мест, доступное количество мест: #{@available_seats}"
+      seat
     end
   end
 
