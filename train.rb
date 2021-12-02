@@ -1,14 +1,30 @@
 require_relative 'manufacturing_company.rb'
 require_relative 'instance_counter.rb'
+require_relative 'accessors.rb'
+require_relative 'validation.rb'
 
 class Train
   include ManufacturingCompany
   include InstanceCounter
-
-  attr_reader :speed, :type, :number, :route, :station_start, :current_st, :wagons
+  include Validation
+  extend Accessors
 
   NUMBER_FORMAT = /^[а-яa-z\d]{3}[-]*[а-яa-z\d]{2}$/i
   ARRAY_TYPE = %w[пассажирский грузовой]
+
+  attr_accessor_with_history :train
+  history :train
+  strong_attr_accessor :speed, Integer
+  strong_attr_accessor :route, Route
+  strong_attr_accessor :number, Train
+  strong_attr_accessor :type, Train
+  validate :number, :format, NUMBER_FORMAT
+  validate :number, :presence
+  validate :type, :presence
+
+  attr_reader :speed, :number, :type, :route, :station_start, :current_st, :wagons
+
+
 
   class << self
     def all
@@ -26,22 +42,8 @@ class Train
     @speed = 0
     @wagons = []
     self.class.all << self
+    validate!
     register_instance
-    validate!
-  end
-
-  def validate!
-    raise "Номер не может быть nil" if number.nil?
-    raise "Номер должен быть не менее пяти символов" if number.length < 5
-    raise "Невалидный формат номера" if number !~ NUMBER_FORMAT
-    raise "Неверный ввод! Тип поезда может быть либо грузовой, либо пассажирский" unless ARRAY_TYPE.include?(type)
-  end
-
-  def valid?
-    validate!
-    true
-  rescue
-    false
   end
 
   def forward
@@ -87,7 +89,6 @@ class Train
   def wagon_train(&block)
     @wagons.each {|wagon| block.call(wagon)}
   end
-  #t.wagon_train {|wagon| puts wagon}
 
   private
 

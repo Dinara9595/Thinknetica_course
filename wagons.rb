@@ -1,24 +1,22 @@
 require_relative 'manufacturing_company.rb'
-
-ARRAY_TYPE = %w[пассажирский грузовой]
+require_relative 'accessors.rb'
+require_relative 'validation.rb'
 
 class Wagons
   include ManufacturingCompany
+  include Validation
+  extend Accessors
+
+  strong_attr_accessor :type, Wagons
+  attr_accessor_with_history :wagon
+  history :wagon
+
+  validate :type, :presence
+  validate :type, :type, String
+
   attr_reader :type
   def initialize(type)
     @type = type
     validate!
-  end
-
-  def validate!
-    raise "Тип вагона не может быть nil" if type.nil?
-    raise "Неверный ввод! Тип вагона может быть либо грузовой, либо пассажирский" unless ARRAY_TYPE.include?(type)
-  end
-
-  def valid?
-    validate!
-    true
-  rescue
-    false
   end
 end

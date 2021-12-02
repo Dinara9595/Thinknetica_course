@@ -1,7 +1,11 @@
+require_relative 'validation.rb'
+
 class CargoTrain < Train
-  NUMBER_FORMAT = /^[а-яa-z\d]{3}[-]*[а-яa-z\d]{2}$/i
+  include Validation
+  validate :number, :presence
+  validate :number, :format, NUMBER_FORMAT
+
   def initialize(number)
     super(number, "грузовой")
-    validate!
   end
 end

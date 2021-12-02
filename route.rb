@@ -1,7 +1,22 @@
 require_relative 'instance_counter.rb'
+require_relative 'accessors.rb'
+require_relative 'validation.rb'
 
 class Route
   include InstanceCounter
+  include Validation
+  extend Accessors
+
+  strong_attr_accessor :first_station, Station
+  strong_attr_accessor :last_station, Station
+  history :route
+  attr_accessor_with_history :route
+
+  validate :first_station, :presence
+  validate :last_station, :presence
+  validate :first_station, :type, Station
+  validate :last_station, :type, Station
+
   attr_accessor :station_list, :first_station, :last_station
 
   class << self
@@ -11,24 +26,12 @@ class Route
   end
 
   def initialize(first_station, last_station)
+    @first_station = first_station
+    @last_station = last_station
     @station_list = [first_station, last_station]
     self.class.all << self
+    validate!
     register_instance
-    validate!
-  end
-
-  def validate!
-    first_station = @station_list.first
-    last_station = @station_list.last
-    raise "Переданный объект не является станцией" unless first_station.kind_of? Station and last_station.kind_of? Station
-    raise "Первая и вторая станции в маршруте не могут быть одинаковыми" if first_station == last_station
-  end
-
-  def valid?
-    validate!
-    true
-  rescue
-    false
   end
 
   def add_station(station)
