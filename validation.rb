@@ -17,7 +17,8 @@ module Validation
   module InstanceMethods
     def validate!
       self.class.instance_variable_get(:@validations)&.each do |validation|
-        send("#{validation[1]}_validation", *[validation[0], validation[2]].compact)
+        instance_var = get_variable_by_symbol(validation[0])
+        send("#{validation[1]}_validation", *[validation[0], instance_var, validation[2]].compact)
       end
     end
 
@@ -30,10 +31,8 @@ module Validation
 
     private
 
-    def presence_validation(check_attribute)
-      instance_var = get_variable_by_symbol(check_attribute)
-
-      raise "#{check_attribute} не может быть nil или пустой строкой" if instance_var == nil || check_attribute == ""
+    def presence_validation(check_attribute, value)
+      raise "#{check_attribute} не может быть nil или пустой строкой" if value == nil || value == ""
     end
 
     def format_validation(check_attribute, format)
