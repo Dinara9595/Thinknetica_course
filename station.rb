@@ -1,10 +1,18 @@
 require_relative 'instance_counter.rb'
+require_relative 'accessors.rb'
+require_relative 'validation.rb'
 
 class Station
   include InstanceCounter
-  attr_reader :name, :train_now
+  include Validation
+  extend Accessors
 
   NAME_FORMAT = /^[а-яa-z\d]{3,30}$/i
+
+  strong_attr_accessor :name, Station
+  validate :name, :presence
+  validate :name, :format, NAME_FORMAT
+  attr_reader :name, :train_now
 
   class << self
     def all
@@ -17,22 +25,8 @@ class Station
     @name = name
     @train_now = []
     self.class.all << self
+    validate!
     register_instance
-    validate!
-  end
-
-  def validate!
-    raise "Название станции не может быть nil" if name.nil?
-    raise "Название станции должно быть не менее трех символов" if name.length < 3
-    raise "Название станции должно быть не более тридцати символов" if name.length > 30
-    raise "Невалидный формат имени" if name !~ NAME_FORMAT
-  end
-
-  def valid?
-    validate!
-    true
-  rescue
-    false
   end
 
   def train_on_station(&block)
