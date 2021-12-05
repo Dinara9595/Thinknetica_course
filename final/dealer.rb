@@ -1,5 +1,8 @@
 class Dealer < Player
-  def initialize(cards, name = "Дилер")
+  attr_reader :name
+
+  def initialize
+    @name = "Дилер"
     super
   end
 end

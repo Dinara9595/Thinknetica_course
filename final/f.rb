@@ -1,5 +1,0 @@
-load './game21.rb'
-load './player.rb'
-load './user.rb'
-load './dealer.rb'
-load './card.rb'
