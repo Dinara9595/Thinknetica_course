@@ -7,7 +7,7 @@ class Card
   end
 
   def to_s
-    "#{suit}/#{rank}"
+    "#{rank}#{suit}"
   end
 
   def points
